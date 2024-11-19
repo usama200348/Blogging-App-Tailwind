@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, getDocs, limit } from 'firebase/firestore';
+import { collection, query, getDocs, limit, orderBy } from 'firebase/firestore';
 import { db } from '../config/firebaseconfig';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,13 +12,13 @@ const Home = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        // Fetch blogs from the 'blogs' collection
-        const blogQuery = query(collection(db, 'blogs'), limit(10));
+        // Fetch blogs from the 'blogs' collection, ordered by timestamp
+        const blogQuery = query(collection(db, 'blogs'), orderBy('timestamp', 'desc'), limit(10));
         const blogSnapshot = await getDocs(blogQuery);
         const blogsData = blogSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          date: doc.data().timestamp ? doc.data().timestamp.toDate().toLocaleDateString() : 'No date',
+          date: doc.data().timestamp ? doc.data().timestamp.toDate().toLocaleString() : 'No date',
         }));
         setBlogs(blogsData); // Update state with fetched blogs
       } catch (error) {
