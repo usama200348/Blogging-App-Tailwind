@@ -5,80 +5,92 @@ import { auth } from "../config/firebaseconfig";
 import Modal from "./modal";
 
 const Navbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // State for logout confirmation modal
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // State for success modal
-  const [user, setUser] = useState(null); // State to store logged-in user info
-  const [justRegistered, setJustRegistered] = useState(false); // Track if user just registered
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu toggle
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [justRegistered, setJustRegistered] = useState(false);
   const navigate = useNavigate();
 
-  // Listen to auth state changes
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setJustRegistered(false); // Reset this state if the user logs in
+        setJustRegistered(false);
       }
     });
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
-  // Handle the case when the user registers
   useEffect(() => {
     if (window.location.pathname === "/login" && !user) {
       const registeredFlag = sessionStorage.getItem("justRegistered");
       if (registeredFlag) {
-        setJustRegistered(true); // Show the "just registered" state
-        sessionStorage.removeItem("justRegistered"); // Clear the flag
+        setJustRegistered(true);
+        sessionStorage.removeItem("justRegistered");
       }
     }
   }, [user]);
 
-  // Toggle dropdown menu
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  // Show the logout confirmation modal
-  const showLogoutModal = () => {
-    setIsLogoutModalOpen(true); // Open the confirmation modal
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
   };
 
-  // Handle user confirming logout
+  const showLogoutModal = () => {
+    setIsLogoutModalOpen(true);
+  };
+
   const handleConfirmLogout = async () => {
     try {
-      await signOut(auth); // Log out user
-      setIsLogoutModalOpen(false); // Close confirmation modal
-      setIsSuccessModalOpen(true); // Open success modal
+      await signOut(auth);
+      setIsLogoutModalOpen(false);
+      setIsSuccessModalOpen(true);
       setTimeout(() => {
         setIsSuccessModalOpen(false);
-        navigate("/login"); // Redirect to login page after success modal
-      }, 1500); // Delay to show success modal
+        navigate("/login");
+      }, 1500);
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
-  // Handle user canceling logout
   const cancelLogout = () => {
-    setIsLogoutModalOpen(false); // Simply close the modal, do nothing
+    setIsLogoutModalOpen(false);
   };
 
   return (
-    <div className="navbar bg-white shadow-md px-4 fixed w-full z-50">
-      {/* Left Section: Navigation */}
+    <div className="navbar bg-white shadow-md px-4 fixed w-full z-50 flex flex-wrap">
+      {/* Left Section */}
       <div className="flex-1">
-        <ul className="flex gap-4 ml-5">
+        <button
+          className="block md:hidden text-gray-700 text-xl"
+          onClick={toggleMobileMenu}
+        >
+          ☰ {/* Mobile menu toggle (hamburger icon) */}
+        </button>
+        <ul
+          className={`${
+            isMobileMenuOpen ? "block" : "hidden"
+          } md:flex gap-4 ml-2 md:ml-5`}
+        >
           <li>
-            <Link to="/" className="text-gray-700 text-lg hover:text-blue-600">
+            <Link
+              to="/"
+              className="text-gray-700 text-sm md:text-lg hover:text-blue-600"
+            >
               Home
             </Link>
           </li>
-          {user && !justRegistered && ( // Show Dashboard only if the user is logged in and not just registered
+          {user && !justRegistered && (
             <li>
               <Link
                 to="/dashboard"
-                className="text-gray-700 text-lg hover:text-blue-600"
+                className="text-gray-700 text-sm md:text-lg hover:text-blue-600"
               >
                 Dashboard
               </Link>
@@ -87,22 +99,24 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Center Section: Logo */}
-      <div className="flex-1 text-center">
-        <Link to="/" className="text-2xl font-semibold text-gray-800">
+      {/* Center Section */}
+      <div className="flex-1 text-center ">
+        <Link
+          to="/"
+          className="text-lg md:text-2xl font-semibold text-gray-800"
+        >
           Blogging App
         </Link>
       </div>
 
-      {/* Right Section: Conditional Rendering */}
-      <div className="flex-none gap-4">
+      {/* Right Section */}
+      <div className="flex-none gap-2 md:gap-4">
         {!user || justRegistered ? (
-          // Show Login and Register if no user is logged in or just registered
-          <ul className="flex gap-4">
+          <ul className="flex gap-2 md:gap-4">
             <li>
               <Link
                 to="/login"
-                className="text-gray-700 text-lg hover:text-blue-600"
+                className="text-gray-700 text-sm md:text-lg hover:text-blue-600"
               >
                 Login
               </Link>
@@ -110,22 +124,23 @@ const Navbar = () => {
             <li>
               <Link
                 to="/register"
-                className="text-gray-700 text-lg hover:text-blue-600"
+                className="text-gray-700 text-sm md:text-lg hover:text-blue-600"
               >
                 Register
               </Link>
             </li>
           </ul>
         ) : (
-          // Show Profile and Logout for logged-in users
-          <div className="flex items-center gap-4">
-            <span className="text-gray-700 text-lg">{user.email}</span>
-            <div className="dropdown dropdown-end mr-5">
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="text-gray-700 text-sm md:text-lg">
+              {user.email}
+            </span>
+            <div className="dropdown dropdown-end mr-2 md:mr-5">
               <button
                 onClick={toggleDropdown}
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full">
+                <div className="w-8 md:w-10 rounded-full">
                   <img
                     alt="User Avatar"
                     src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
@@ -133,7 +148,7 @@ const Navbar = () => {
                 </div>
               </button>
               {isDropdownOpen && (
-                <ul className="menu menu-sm dropdown-content bg-white text-gray-700 rounded-box shadow-lg mt-3 w-52 p-2">
+                <ul className="menu menu-sm dropdown-content bg-white text-gray-700 rounded-box shadow-lg mt-3 w-40 md:w-52 p-2">
                   <li>
                     <Link to="/profile" className="hover:text-blue-600">
                       Profile
@@ -141,7 +156,7 @@ const Navbar = () => {
                   </li>
                   <li
                     className="hover:text-blue-600"
-                    onClick={showLogoutModal} // Open confirmation modal
+                    onClick={showLogoutModal}
                   >
                     <Link>Logout</Link>
                   </li>
@@ -152,23 +167,21 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Logout Confirmation Modal */}
+      {/* Modals */}
       <Modal
         type="warning"
         message="Are you sure you want to log out?"
         isOpen={isLogoutModalOpen}
-        closeModal={cancelLogout} // Close modal without logout
-        confirmAction={handleConfirmLogout} // Perform logout if confirmed
+        closeModal={cancelLogout}
+        confirmAction={handleConfirmLogout}
         confirmText="Yes"
         cancelText="No"
       />
-
-      {/* Success Modal */}
       <Modal
         type="success"
         message="You have successfully logged out!"
         isOpen={isSuccessModalOpen}
-        closeModal={() => setIsSuccessModalOpen(false)} // Close modal
+        closeModal={() => setIsSuccessModalOpen(false)}
       />
     </div>
   );
