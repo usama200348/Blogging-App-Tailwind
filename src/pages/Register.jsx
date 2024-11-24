@@ -26,26 +26,25 @@ const Register = () => {
 
       // Set the displayName for the user
       await updateProfile(userCredential.user, {
-        displayName: username.current.value, // This sets the username
+        displayName: username.current.value, 
       });
 
       console.log(userCredential.user);
       setIsSuccessModalOpen(true);
+
       
-      // Sign out the user after registration to prevent auto-login
       await signOut(auth);
 
       setTimeout(() => {
-        navigate('/login'); // Redirect to login after registration
+        navigate('/login'); 
       }, 1500);
 
     } catch (error) {
       const errorMessage = error.message;
-      setError(errorMessage); // Display any errors
+      setError(errorMessage); 
       setIsErrorModalOpen(true);
     }
 
-    // Reset form values
     username.current.value = '';
     email.current.value = '';
     password.current.value = '';
@@ -55,36 +54,37 @@ const Register = () => {
   const closeErrorModal = () => setIsErrorModalOpen(false);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="w-96 p-6 shadow-lg bg-white rounded-lg">
-        <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
+    <div className="flex justify-center items-center h-screen bg-gray-50">
+      <div className="w-96 p-8 shadow-xl bg-white rounded-lg">
+        <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800">Register</h2>
         <form onSubmit={handleRegister}>
           <input
             type="text"
             placeholder="Username"
-            className="input input-bordered w-full mb-4"
+            className="input input-bordered w-full mb-5 px-4 py-3 rounded-lg bg-blue-50 border border-gray-300 focus:ring-2 focus:ring-blue-500"
             ref={username}
             required
           />
           <input
             type="email"
             placeholder="Email"
-            className="input input-bordered w-full mb-4"
+            className="input input-bordered w-full mb-5 px-4 py-3 rounded-lg bg-blue-50 border border-gray-300 focus:ring-2 focus:ring-blue-500"
             ref={email}
             required
           />
           <input
             type="password"
             placeholder="Password"
-            className="input input-bordered w-full mb-6"
+            className="input input-bordered w-full mb-6 px-4 py-3 rounded-lg bg-blue-50 border border-gray-300 focus:ring-2 focus:ring-blue-500"
             ref={password}
             required
           />
-          <button className="btn btn-primary w-full">Register</button>
+          <button className="btn btn-primary w-full py-3 rounded-lg text-white font-semibold hover:bg-blue-600 transition duration-200 ease-in-out">
+            Register
+          </button>
         </form>
       </div>
 
-      {/* Success and Error Modals */}
       <Modal
         type="success"
         message="Registration successful!"

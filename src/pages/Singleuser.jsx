@@ -13,9 +13,6 @@ const Singleuser = () => {
     const fetchUserBlogs = async () => {
       setLoading(true);
       try {
-        console.log("Fetching blogs for UID:", uid); // Debugging log
-
-        // Query Firestore to get blogs for the specific user
         const q = query(
           collection(db, "blogs"),
           where("uid", "==", uid),
@@ -31,15 +28,9 @@ const Singleuser = () => {
               ? doc.data().timestamp.toDate().toLocaleDateString()
               : "No date",
           }));
-
-          console.log("Fetched Blogs:", userBlogsData); // Debugging log
-
           setUserBlogs(userBlogsData);
-
-          // Set user email from the first blog
           setUserEmail(userBlogsData[0].user || "Unknown");
         } else {
-          console.log("No blogs found for this UID"); // Debugging log
           setUserEmail("No Blogs Found");
           setUserBlogs([]);
         }
@@ -55,39 +46,67 @@ const Singleuser = () => {
   }, [uid]);
 
   return (
-    <div className="py-8 px-8 bg-gray-100 pt-28 h-screen">
-      <div className="flex justify-center items-center mb-6">
-        <h1 className="text-xl font-bold text-gray-800">
-          Blogs By:
-          <span className="text-blue-600 text-lg font-medium px-2 py-1 bg-blue-100 rounded-md ml-2">
+    <div className="py-8 px-6 bg-gradient-to-b from-gray-50 to-white min-h-screen pt-28">
+      {/* Title Section */}
+      <div className="flex justify-center items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Blogs by:
+          <span className="text-blue-600 text-xl font-medium bg-blue-100 py-1 px-3 rounded-lg ml-3">
             {userEmail}
           </span>
         </h1>
       </div>
+
+      {/* Content Section */}
       {loading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="loading loading-spinner loading-lg bg-primary"></div>
+        <div className="flex items-center justify-center h-96">
+          <div className="loading loading-spinner loading-lg text-blue-600"></div>
+        </div>
+      ) : userBlogs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-96 text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-12 w-12 text-gray-400 mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12h6m2 4H7m2-8h.01M19 12a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <p className="text-gray-600 text-lg font-semibold mb-4">
+            No blogs found for this user.
+          </p>
         </div>
       ) : (
-        <div className="overflow-y-auto h-96 container mx-auto border bg-white rounded-lg shadow-md">
-          <div className="flex flex-col gap-4 p-4">
-            {userBlogs.map((blog) => (
-              <div
-                key={blog.id}
-                className="bg-gray-50 p-6 rounded-lg shadow-md"
-              >
-                <h2 className="text-2xl font-semibold mb-2">{blog.title}</h2>
-                <p className="text-gray-700 mb-4">{blog.description}</p>
-                <p className="text-gray-600 text-sm mb-2">
-                  Published by: {blog.user || "Unknown"}
+        <div className="container mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {userBlogs.map((blog) => (
+            <div
+              key={blog.id}
+              className="bg-white border rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition"
+            >
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-3">
+                  {blog.title}
+                </h2>
+                <p className="text-gray-700 mb-4 line-clamp-3">
+                  {blog.description}
                 </p>
-                <p className="text-gray-600 text-sm">
-                  <span>Date: </span>
-                  {blog.date}
-                </p>
+                <div className="text-gray-500 text-sm mb-2">
+                  <p>
+                    <strong>Published by:</strong> {blog.user || "Unknown"}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {blog.date}
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

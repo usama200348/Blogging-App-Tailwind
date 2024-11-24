@@ -21,7 +21,7 @@ const Login = () => {
         console.log(user);
         setIsSuccessModalOpen(true);
         setTimeout(() => {
-          navigate('/dashboard'); // Redirect to dashboard on successful login
+          navigate('/dashboard'); 
         }, 1500);
       })
       .catch((error) => {
@@ -38,21 +38,22 @@ const Login = () => {
   const closeErrorModal = () => setIsErrorModalOpen(false);
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 h-screen">
-      <div className="w-96 p-6 shadow-lg bg-white rounded-lg">
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+    <div className="flex justify-center items-center h-screen bg-white">
+      {/* Login Container */}
+      <div className="w-96 p-8 shadow-xl rounded-lg bg-white">
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Login</h2>
         <form onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="Email"
-            className="input input-bordered w-full mb-4"
+            className="input input-bordered w-full mb-4 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             ref={email}
             required
           />
           <input
             type="password"
             placeholder="Password"
-            className="input input-bordered w-full mb-6"
+            className="input input-bordered w-full mb-6 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             ref={password}
             required
           />
@@ -60,13 +61,14 @@ const Login = () => {
         </form>
       </div>
 
-      {/* Success and Error Modals */}
+      {/* Success Modal */}
       <Modal
         type="success"
         message="Login successful!"
         isOpen={isSuccessModalOpen}
         closeModal={closeSuccessModal}
       />
+      {/* Error Modal */}
       <Modal
         type="error"
         message={'Invalid credentials!'}
